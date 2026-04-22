@@ -3,4 +3,6 @@
 /.venv
 /logs
 fyersApi.log
-fyersRequest.log
+fyersRequests.log
+*.log
+.env

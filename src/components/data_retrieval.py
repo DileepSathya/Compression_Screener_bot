@@ -5,6 +5,7 @@ from src.pipeline.hist_data_retrival_pipeline import hist_data_retrival_pipeline
 from datetime import datetime, timedelta,date
 from src.utils.common import extract_candles_with_symbol,save_to_hist_data_json,clear_hist_data_json
 from src.utils.common import format_symbol
+from src.components.mongodb_saver import MongoDBSaver
 
 class DataRetrieval:
 
@@ -18,6 +19,7 @@ class DataRetrieval:
             token=access_token,
             log_path=""
         )
+        self.mongodb_saver = MongoDBSaver()
 
     def userdata(self):
         response = self.fyers.get_profile()
@@ -58,4 +60,5 @@ class DataRetrieval:
                 file_path=config_manager.json_file_path()
                 
                 save_to_hist_data_json(data_with_symbols,file_path)
+                self.mongodb_saver.save_records(data_with_symbols)
                 start = datetime.strptime(range_to, "%Y-%m-%d") + timedelta(days=1)
