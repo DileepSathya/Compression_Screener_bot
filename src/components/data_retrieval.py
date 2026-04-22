@@ -3,7 +3,7 @@ from fyers_apiv3 import fyersModel
 from src.configurations.config import config_manager
 from src.pipeline.hist_data_retrival_pipeline import hist_data_retrival_pipeline
 from datetime import datetime, timedelta,date
-from src.utils.common import extract_candles_with_symbol,save_to_hist_data_json,clear_hist_data_json
+from src.utils.common import extract_candles_with_symbol,clear_hist_data_json
 from src.utils.common import format_symbol
 from src.components.mongodb_saver import MongoDBSaver
 
@@ -27,8 +27,7 @@ class DataRetrieval:
         return response
 
     def hist_data(self):
-        file_path=config_manager.json_file_path()
-        clear_hist_data_json(file_path) 
+
         symbols_list, start_date, end_date = hist_data_retrival_pipeline.hist_data()
 
         start_date_obj = datetime.strptime(start_date, "%Y-%m-%d")
@@ -56,9 +55,8 @@ class DataRetrieval:
                 response = self.fyers.history(data=data)
           
                 data_with_symbols=extract_candles_with_symbol(response_json=response,symbol=symbol)
-            
-                file_path=config_manager.json_file_path()
-                
-                save_to_hist_data_json(data_with_symbols,file_path)
                 self.mongodb_saver.save_records(data_with_symbols)
                 start = datetime.strptime(range_to, "%Y-%m-%d") + timedelta(days=1)
+
+        self.mongodb_saver.flush()
+        
