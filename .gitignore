@@ -6,3 +6,6 @@ fyersApi.log
 fyersRequests.log
 *.log
 .env
+.env.example
+__pycache__/
+*.py[cod]
